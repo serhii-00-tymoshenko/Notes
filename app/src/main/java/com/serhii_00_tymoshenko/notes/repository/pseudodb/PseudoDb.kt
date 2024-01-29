@@ -8,6 +8,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.callbackFlow
@@ -52,11 +53,9 @@ class PseudoDb() {
 
     fun addNote(note: Note) {
         notes.add(note)
-        Log.d("FUCK IT", notes.toString())
     }
 
     fun deleteNote(note: Note) {
-        Log.d("FUCK IT", notes.toString())
         notes.remove(note)
     }
 
@@ -67,19 +66,16 @@ class PseudoDb() {
         notes.removeAt(index)
         notes.add(index, editedNote)
 
-        Log.d("FUCK IT", notes.toString())
     }
 
     fun getNotes(): Flow<List<Note>> = callbackFlow {
-        trySend(notes)
-
-        awaitClose {
-            close()
+        while (true) {
+            delay(1000)
+            trySend(notes)
         }
     }
 
     fun getNote(noteId: String): Note {
-        Log.d("FUCK IT", notes.toString())
         return notes.filter { note -> note.id == noteId }[0]
     }
 

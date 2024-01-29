@@ -2,6 +2,7 @@ package com.serhii_00_tymoshenko.notes.ui.noteslist
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,6 +18,7 @@ import com.serhii_00_tymoshenko.notes.ui.noteitem.NoteItemFragment
 import com.serhii_00_tymoshenko.notes.ui.noteslist.adapters.NotesAdapter
 import com.serhii_00_tymoshenko.notes.ui.noteslist.viewmodel.provider.NotesListViewModelProvider
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class NotesListFragment : Fragment() {
@@ -63,6 +65,8 @@ class NotesListFragment : Fragment() {
         lifecycleScope.launch(Dispatchers.IO) {
             viewModel.getNotes().collect { notes ->
                 notesAdapter.submitList(notes)
+                Log.d("FUCK IT", notes.toString())
+                viewModel.addNote()
             }
         }
     }
