@@ -2,6 +2,7 @@ package com.serhii_00_tymoshenko.notes.repository.pseudodb
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import com.serhii_00_tymoshenko.notes.data.Note
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.cancel
@@ -49,9 +50,15 @@ class PseudoDb() {
          notes.addAll(storedNotes)
     }
 
-    fun addNote(note: Note) = notes.add(note)
+    fun addNote(note: Note) {
+        notes.add(note)
+        Log.d("FUCK IT", notes.toString())
+    }
 
-    fun deleteNote(note: Note) = notes.remove(note)
+    fun deleteNote(note: Note) {
+        Log.d("FUCK IT", notes.toString())
+        notes.remove(note)
+    }
 
     fun editNote(editedNote: Note) {
         val oldNote = notes.filter { note -> note.id == editedNote.id }[0]
@@ -59,17 +66,22 @@ class PseudoDb() {
 
         notes.removeAt(index)
         notes.add(index, editedNote)
+
+        Log.d("FUCK IT", notes.toString())
     }
 
     fun getNotes(): Flow<List<Note>> = callbackFlow {
         trySend(notes)
 
         awaitClose {
-            cancel()
+            close()
         }
     }
 
-    fun getNote(noteId: String): Note = notes.filter { note -> note.id == noteId }[0]
+    fun getNote(noteId: String): Note {
+        Log.d("FUCK IT", notes.toString())
+        return notes.filter { note -> note.id == noteId }[0]
+    }
 
     companion object {
         private var instance: PseudoDb? = null

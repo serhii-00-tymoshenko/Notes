@@ -1,4 +1,4 @@
-package com.serhii_00_tymoshenko.notes.ui.editnote.viewmodel
+package com.serhii_00_tymoshenko.notes.ui.addnote.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,8 +8,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 
-class EditNoteViewModel(private val repository: NotesRepository) : ViewModel() {
-    fun editNote(editedNote: Note) = viewModelScope.launch(SupervisorJob() + Dispatchers.IO) {
-        repository.editNote(editedNote)
+class AddNoteViewModel(private val repository: NotesRepository) : ViewModel() {
+    fun addNote(editedNote: Note) = viewModelScope.launch(SupervisorJob() + Dispatchers.IO) {
+        repository.addNote(editedNote)
     }
 }

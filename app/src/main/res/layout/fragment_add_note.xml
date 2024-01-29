@@ -6,7 +6,7 @@
     tools:context=".ui.addnote.AddNoteFragment">
 
     <include
-        android:id="@+id/edit_note"
+        android:id="@+id/add_note"
         layout="@layout/item_actions_template"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

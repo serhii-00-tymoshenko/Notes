@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.serhii_00_tymoshenko.notes.repository.NotesRepository
 import com.serhii_00_tymoshenko.notes.ui.editnote.viewmodel.EditNoteViewModel
-import com.serhii_00_tymoshenko.notes.ui.noteslist.viewmodel.NotesListViewModel
 
 class EditNoteViewModelFactory(private val repository: NotesRepository) :
     ViewModelProvider.Factory {
