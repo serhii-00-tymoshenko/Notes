@@ -11,10 +11,11 @@ import com.serhii_00_tymoshenko.notes.databinding.ItemNoteCompactBinding
 
 class NotesAdapter(
     private val callback: (Note) -> Unit
-): ListAdapter<Note, NotesAdapter.NoteViewHolder>(DIFF_CALLBACK) {
+) : ListAdapter<Note, NotesAdapter.NoteViewHolder>(DIFF_CALLBACK) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteViewHolder {
-        val binding = ItemNoteCompactBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding =
+            ItemNoteCompactBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return NoteViewHolder(binding)
     }
 
@@ -23,7 +24,8 @@ class NotesAdapter(
         holder.bind(currentNote)
     }
 
-    inner class NoteViewHolder(private val binding: ItemNoteCompactBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class NoteViewHolder(private val binding: ItemNoteCompactBinding) :
+        RecyclerView.ViewHolder(binding.root) {
         fun bind(note: Note) {
             setCallback(note)
             setContent(note)

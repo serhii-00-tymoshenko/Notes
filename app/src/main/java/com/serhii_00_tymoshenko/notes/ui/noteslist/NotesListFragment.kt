@@ -1,13 +1,13 @@
 package com.serhii_00_tymoshenko.notes.ui.noteslist
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.serhii_00_tymoshenko.notes.R
 import com.serhii_00_tymoshenko.notes.data.Note
@@ -16,6 +16,8 @@ import com.serhii_00_tymoshenko.notes.repository.NotesRepository
 import com.serhii_00_tymoshenko.notes.ui.noteitem.NoteItemFragment
 import com.serhii_00_tymoshenko.notes.ui.noteslist.adapters.NotesAdapter
 import com.serhii_00_tymoshenko.notes.ui.noteslist.viewmodel.provider.NotesListViewModelProvider
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class NotesListFragment : Fragment() {
     private var _binding: FragmentNotesListBinding? = null
@@ -44,6 +46,15 @@ class NotesListFragment : Fragment() {
 
         initAdapter(activity)
         setupRecycler(context)
+        initObservers()
+    }
+
+    private fun initObservers() {
+        lifecycleScope.launch(Dispatchers.IO) {
+            viewModel.getNotes().collect { notes ->
+                notesAdapter.submitList(notes)
+            }
+        }
     }
 
     private fun initAdapter(activity: FragmentActivity) {
