@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import com.serhii_00_tymoshenko.notes.data.Note
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -62,7 +63,13 @@ class PseudoDb() {
 
     fun getNotes(): Flow<List<Note>> = callbackFlow {
         trySend(notes)
+
+        awaitClose {
+            cancel()
+        }
     }
+
+    fun getNote(noteId: String): Note = notes.filter { note -> note.id == noteId }[0]
 
     companion object {
         private var instance: PseudoDb? = null

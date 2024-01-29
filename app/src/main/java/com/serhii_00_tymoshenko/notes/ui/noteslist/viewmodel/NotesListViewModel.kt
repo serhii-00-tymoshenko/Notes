@@ -28,14 +28,6 @@ class NotesListViewModel(private val repository: NotesRepository) : ViewModel() 
         }
     }
 
-    fun editNote(editedNote: Note) = viewModelScope.launch(coroutineContext) {
-        repository.editNote(editedNote)
-    }
-
-    fun addNote(note: Note) = viewModelScope.launch(coroutineContext) {
-        repository.addNote(note)
-    }
-
     fun deleteNote(note: Note) = viewModelScope.launch(coroutineContext) {
         repository.deleteNote(note)
     }

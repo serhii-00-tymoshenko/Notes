@@ -11,7 +11,9 @@ import com.bumptech.glide.Glide
 import com.serhii_00_tymoshenko.notes.R
 import com.serhii_00_tymoshenko.notes.data.Note
 import com.serhii_00_tymoshenko.notes.databinding.FragmentNoteItemBinding
+import com.serhii_00_tymoshenko.notes.repository.NotesRepository
 import com.serhii_00_tymoshenko.notes.ui.editnote.EditNoteFragment
+import com.serhii_00_tymoshenko.notes.ui.noteitem.viewmodel.provider.NoteItemViewModelProvider
 
 class NoteItemFragment : Fragment() {
     private var _binding: FragmentNoteItemBinding? = null
@@ -19,6 +21,10 @@ class NoteItemFragment : Fragment() {
 
     private val note by lazy {
         arguments?.getParcelable(NOTE_ARGUMENT_KEY) ?: Note("Not found")
+    }
+
+    private val viewModel by lazy {
+        NoteItemViewModelProvider.getViewModel(this, NotesRepository.getInstance(), note.id)
     }
 
     override fun onCreateView(
@@ -36,8 +42,17 @@ class NoteItemFragment : Fragment() {
         val activity = requireActivity()
         val context = requireContext()
 
-        setContent(context)
+        setContent(context, note)
         setListeners(activity)
+        initObservers(context)
+    }
+
+    private fun initObservers(context: Context) {
+        viewModel.getNote().observe(viewLifecycleOwner) { _note ->
+            if (_note != note) {
+                setContent(context, _note)
+            }
+        }
     }
 
     private fun setListeners(activity: FragmentActivity) {
@@ -56,10 +71,11 @@ class NoteItemFragment : Fragment() {
 
         fragmentManager.beginTransaction()
             .replace(fragmentId, editNoteFragment)
+            .addToBackStack(null)
             .commit()
     }
 
-    private fun setContent(context: Context) {
+    private fun setContent(context: Context, note: Note) {
         binding.apply {
             title.text = note.title
 
@@ -79,7 +95,7 @@ class NoteItemFragment : Fragment() {
     }
 
     companion object {
-        private const val NOTE_ARGUMENT_KEY = "note_argument"
+        private const val NOTE_ARGUMENT_KEY = "note_id_argument"
 
         @JvmStatic
         fun newInstance(note: Note) =

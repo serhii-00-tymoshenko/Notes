@@ -10,9 +10,9 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.serhii_00_tymoshenko.notes.R
-import com.serhii_00_tymoshenko.notes.data.Note
 import com.serhii_00_tymoshenko.notes.databinding.FragmentNotesListBinding
 import com.serhii_00_tymoshenko.notes.repository.NotesRepository
+import com.serhii_00_tymoshenko.notes.ui.addnote.AddNoteFragment
 import com.serhii_00_tymoshenko.notes.ui.noteitem.NoteItemFragment
 import com.serhii_00_tymoshenko.notes.ui.noteslist.adapters.NotesAdapter
 import com.serhii_00_tymoshenko.notes.ui.noteslist.viewmodel.provider.NotesListViewModelProvider
@@ -24,7 +24,7 @@ class NotesListFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel by lazy {
-        NotesListViewModelProvider.getViewModel(this, NotesRepository())
+        NotesListViewModelProvider.getViewModel(this, NotesRepository.getInstance())
     }
 
     private lateinit var notesAdapter: NotesAdapter
@@ -47,6 +47,16 @@ class NotesListFragment : Fragment() {
         initAdapter(activity)
         setupRecycler(context)
         initObservers()
+        setListeners(activity)
+    }
+
+    private fun setListeners(activity: FragmentActivity) {
+        binding.apply {
+            addNote.setOnClickListener {
+                val addNoteFragment = AddNoteFragment()
+                beginTransaction(activity, addNoteFragment)
+            }
+        }
     }
 
     private fun initObservers() {
@@ -59,18 +69,18 @@ class NotesListFragment : Fragment() {
 
     private fun initAdapter(activity: FragmentActivity) {
         notesAdapter = NotesAdapter { note ->
-            beginTransaction(activity, note)
+            val noteFragment = NoteItemFragment.newInstance(note)
+            beginTransaction(activity, noteFragment)
         }
     }
 
-    private fun beginTransaction(activity: FragmentActivity, note: Note) {
-        val noteFragment = NoteItemFragment.newInstance(note)
-
+    private fun beginTransaction(activity: FragmentActivity, fragment: Fragment) {
         val fragmentManager = activity.supportFragmentManager
         val fragmentId = R.id.main_fragment
 
         fragmentManager.beginTransaction()
-            .replace(fragmentId, noteFragment)
+            .replace(fragmentId, fragment)
+            .addToBackStack(null)
             .commit()
     }
 
