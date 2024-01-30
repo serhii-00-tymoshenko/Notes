@@ -1,4 +1,4 @@
-package com.serhii_00_tymoshenko.notes.ui.noteslist.viewmodel.provider
+package com.serhii_00_tymoshenko.notes.ui.noteslist.viewmodel.factory
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider

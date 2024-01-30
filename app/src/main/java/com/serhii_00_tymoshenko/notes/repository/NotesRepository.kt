@@ -6,15 +6,13 @@ import com.serhii_00_tymoshenko.notes.repository.pseudodb.PseudoDb
 class NotesRepository {
     private val pseudoDb = PseudoDb.getInstance()
 
-    suspend fun getNotes() = pseudoDb.getNotes()
+    fun getNotes() = pseudoDb.getNotes()
 
-    suspend fun getNote(noteId: String) = pseudoDb.getNote(noteId)
+    fun addNote(note: Note) = pseudoDb.addNote(note)
 
-    suspend fun addNote(note: Note) = pseudoDb.addNote(note)
+    fun editNote(editedNote: Note) = pseudoDb.editNote(editedNote)
 
-    suspend fun editNote(editedNote: Note) = pseudoDb.editNote(editedNote)
-
-    suspend fun deleteNote(note: Note) = pseudoDb.deleteNote(note)
+    fun deleteNote(note: Note) = pseudoDb.deleteNote(note)
 
     companion object {
         private var instance: NotesRepository? = null

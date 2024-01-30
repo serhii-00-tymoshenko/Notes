@@ -1,24 +1,16 @@
 package com.serhii_00_tymoshenko.notes.repository.pseudodb
 
-import android.content.Context
+
+import android.database.Observable
 import android.net.Uri
-import android.util.Log
 import com.serhii_00_tymoshenko.notes.data.Note
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 
 
-class PseudoDb() {
-    private val notes = mutableListOf<Note>()
+class PseudoDb : Observable<List<Note>>() {
+    private val notes = MutableStateFlow<List<Note>>(emptyList())
 
     init {
         fillInitialData()
@@ -48,36 +40,30 @@ class PseudoDb() {
             )
         )
 
-         notes.addAll(storedNotes)
+        notes.update { it.toMutableList().apply { addAll(storedNotes) } }
     }
 
     fun addNote(note: Note) {
-        notes.add(note)
+        notes.update { it.toMutableList().apply { add(note) } }
     }
 
     fun deleteNote(note: Note) {
-        notes.remove(note)
+        notes.update { it.toMutableList().apply { remove(note) } }
     }
 
     fun editNote(editedNote: Note) {
-        val oldNote = notes.filter { note -> note.id == editedNote.id }[0]
-        val index = notes.indexOf(oldNote)
+        notes.update { notes ->
+            notes.toMutableList().apply {
+                val oldNote = notes.filter { note -> note.id == editedNote.id }[0]
+                val index = notes.indexOf(oldNote)
 
-        notes.removeAt(index)
-        notes.add(index, editedNote)
-
-    }
-
-    fun getNotes(): Flow<List<Note>> = callbackFlow {
-        while (true) {
-            delay(1000)
-            trySend(notes)
+                removeAt(index)
+                add(index, editedNote)
+            }
         }
     }
 
-    fun getNote(noteId: String): Note {
-        return notes.filter { note -> note.id == noteId }[0]
-    }
+    fun getNotes(): Flow<List<Note>> = notes
 
     companion object {
         private var instance: PseudoDb? = null

@@ -1,39 +1,40 @@
 package com.serhii_00_tymoshenko.notes.ui.addnote
 
-import android.content.Context
 import android.net.Uri
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.serhii_00_tymoshenko.notes.data.Note
 import com.serhii_00_tymoshenko.notes.databinding.FragmentAddNoteBinding
 import com.serhii_00_tymoshenko.notes.repository.NotesRepository
-import com.serhii_00_tymoshenko.notes.ui.addnote.viewmodel.provider.AddNoteViewModelProvider
-import com.serhii_00_tymoshenko.notes.ui.editnote.EditNoteFragment
+import com.serhii_00_tymoshenko.notes.ui.addnote.viewmodel.AddNoteViewModel
+import com.serhii_00_tymoshenko.notes.ui.addnote.viewmodel.factory.AddNoteViewModelFactory
 
 class AddNoteFragment : Fragment() {
     private var _binding: FragmentAddNoteBinding? = null
     private val binding get() = _binding!!
 
     private val vieModel by lazy {
-        AddNoteViewModelProvider.getViewModel(
+        ViewModelProvider(
             this,
-            NotesRepository.getInstance()
-        )
+            AddNoteViewModelFactory(NotesRepository.getInstance())
+        )[AddNoteViewModel::class.java]
     }
 
     private var photoUri: Uri? = null
 
-    private val getPhotoLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
-        photoUri = uri
-        Glide.with(binding.root).load(uri).into(binding.addNote.image)
-    }
+    private val getPhotoLauncher =
+        registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+            photoUri = uri
+            Glide.with(requireContext()).load(uri).into(binding.addNote.image)
+        }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -69,6 +70,11 @@ class AddNoteFragment : Fragment() {
                 } else {
                     Toast.makeText(activity, "Enter title", Toast.LENGTH_SHORT).show()
                 }
+            }
+
+            removePhoto.setOnClickListener {
+                photoUri = null
+                Glide.with(activity).load(photoUri).into(image)
             }
         }
     }

@@ -10,21 +10,25 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.serhii_00_tymoshenko.notes.data.Note
 import com.serhii_00_tymoshenko.notes.databinding.FragmentEditNoteBinding
 import com.serhii_00_tymoshenko.notes.repository.NotesRepository
-import com.serhii_00_tymoshenko.notes.ui.editnote.viewmodel.provider.EditNoteViewModelProvider
+import com.serhii_00_tymoshenko.notes.ui.editnote.viewmodel.EditNoteViewModel
+import com.serhii_00_tymoshenko.notes.ui.editnote.viewmodel.factory.EditNoteViewModelFactory
+import com.serhii_00_tymoshenko.notes.ui.noteslist.NotesListFragment.Companion.NOTE_LIST_FRAGMENT_NAME
 
 class EditNoteFragment : Fragment() {
     private var _binding: FragmentEditNoteBinding? = null
     private val binding get() = _binding!!
 
     private val vieModel by lazy {
-        EditNoteViewModelProvider.getViewModel(
+        ViewModelProvider(
             this,
-            NotesRepository.getInstance()
-        )
+            EditNoteViewModelFactory(NotesRepository.getInstance())
+        )[EditNoteViewModel::class.java]
     }
 
     private val note by lazy {
@@ -33,10 +37,11 @@ class EditNoteFragment : Fragment() {
 
     private var photoUri: Uri? = null
 
-    private val getPhotoLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
-        photoUri = uri
-        Glide.with(binding.root).load(uri).into(binding.editNote.image)
-    }
+    private val getPhotoLauncher =
+        registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+            photoUri = uri
+            Glide.with(requireContext()).load(uri).into(binding.editNote.image)
+        }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -75,12 +80,17 @@ class EditNoteFragment : Fragment() {
                     Toast.makeText(activity, "Enter title", Toast.LENGTH_SHORT).show()
                 }
             }
+
+            removePhoto.setOnClickListener {
+                photoUri = null
+                Glide.with(activity).load(photoUri).into(image)
+            }
         }
     }
 
     private fun beginTransaction(activity: FragmentActivity) {
         val fragmentManager = activity.supportFragmentManager
-        fragmentManager.popBackStack()
+        fragmentManager.popBackStack(NOTE_LIST_FRAGMENT_NAME, FragmentManager.POP_BACK_STACK_INCLUSIVE)
     }
 
     private fun setContent(context: Context) {
