@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 
 
-class PseudoDb : Observable<List<Note>>() {
+class PseudoDb {
     private val notes = MutableStateFlow<List<Note>>(emptyList())
 
     init {
