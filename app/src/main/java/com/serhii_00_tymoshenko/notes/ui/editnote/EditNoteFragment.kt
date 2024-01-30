@@ -19,6 +19,7 @@ import com.serhii_00_tymoshenko.notes.repository.NotesRepository
 import com.serhii_00_tymoshenko.notes.ui.editnote.viewmodel.EditNoteViewModel
 import com.serhii_00_tymoshenko.notes.ui.editnote.viewmodel.factory.EditNoteViewModelFactory
 import com.serhii_00_tymoshenko.notes.ui.noteslist.NotesListFragment.Companion.NOTE_LIST_FRAGMENT_NAME
+import com.serhii_00_tymoshenko.notes.utils.FileProvider
 
 class EditNoteFragment : Fragment() {
     private var _binding: FragmentEditNoteBinding? = null
@@ -35,13 +36,20 @@ class EditNoteFragment : Fragment() {
         arguments?.getParcelable(NOTE_ARGUMENT_KEY) ?: Note("Not found")
     }
 
-    private var photoUri: Uri? = null
-
     private val getPhotoLauncher =
         registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
             photoUri = uri
             Glide.with(requireContext()).load(uri).into(binding.editNote.image)
         }
+
+    private val takePhotoLauncher =
+        registerForActivityResult(ActivityResultContracts.TakePicture()) {
+            Glide.with(requireContext()).load(tempPhotoUri).into(binding.editNote.image)
+            photoUri = FileProvider.getGalleryUri(requireContext(), tempPhotoUri)
+        }
+
+    private var tempPhotoUri: Uri? = null
+    private var photoUri: Uri? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -58,13 +66,22 @@ class EditNoteFragment : Fragment() {
         val context = requireContext()
 
         setContent(context)
+        setupFileProvider(context)
         setListeners(activity)
+    }
+
+    private fun setupFileProvider(context: Context) {
+        tempPhotoUri = FileProvider.getTempUri(context)
     }
 
     private fun setListeners(activity: FragmentActivity) {
         binding.editNote.apply {
             addPhoto.setOnClickListener {
                 getPhotoLauncher.launch("image/*")
+            }
+
+            takePhoto.setOnClickListener {
+                takePhotoLauncher.launch(tempPhotoUri)
             }
 
             save.setOnClickListener {

@@ -1,5 +1,6 @@
 package com.serhii_00_tymoshenko.notes.ui.addnote
 
+import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -16,6 +17,7 @@ import com.serhii_00_tymoshenko.notes.databinding.FragmentAddNoteBinding
 import com.serhii_00_tymoshenko.notes.repository.NotesRepository
 import com.serhii_00_tymoshenko.notes.ui.addnote.viewmodel.AddNoteViewModel
 import com.serhii_00_tymoshenko.notes.ui.addnote.viewmodel.factory.AddNoteViewModelFactory
+import com.serhii_00_tymoshenko.notes.utils.FileProvider
 
 class AddNoteFragment : Fragment() {
     private var _binding: FragmentAddNoteBinding? = null
@@ -28,12 +30,19 @@ class AddNoteFragment : Fragment() {
         )[AddNoteViewModel::class.java]
     }
 
+    private var tempPhotoUri: Uri? = null
     private var photoUri: Uri? = null
 
     private val getPhotoLauncher =
         registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
             photoUri = uri
             Glide.with(requireContext()).load(uri).into(binding.addNote.image)
+        }
+
+    private val takePhotoLauncher =
+        registerForActivityResult(ActivityResultContracts.TakePicture()) {
+            Glide.with(requireContext()).load(tempPhotoUri).into(binding.addNote.image)
+            photoUri = FileProvider.getGalleryUri(requireContext(), tempPhotoUri)
         }
 
     override fun onCreateView(
@@ -48,14 +57,24 @@ class AddNoteFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val activity = requireActivity()
+        val context = requireContext()
 
+        setupFileProvider(context)
         setListeners(activity)
+    }
+
+    private fun setupFileProvider(context: Context) {
+        tempPhotoUri = FileProvider.getTempUri(context)
     }
 
     private fun setListeners(activity: FragmentActivity) {
         binding.addNote.apply {
             addPhoto.setOnClickListener {
                 getPhotoLauncher.launch("image/*")
+            }
+
+            takePhoto.setOnClickListener {
+                takePhotoLauncher.launch(tempPhotoUri)
             }
 
             save.setOnClickListener {

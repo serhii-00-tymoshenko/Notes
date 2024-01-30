@@ -9,7 +9,6 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class NotesListViewModel(private val repository: NotesRepository) : ViewModel() {
@@ -24,8 +23,8 @@ class NotesListViewModel(private val repository: NotesRepository) : ViewModel() 
 
     private fun setupFlow() = viewModelScope.launch(coroutineContext) {
         repository.getNotes()
-            .collect() { notes ->
-                notesFlow.update { notes }
+            .collect { notes ->
+                notesFlow.value = notes
             }
     }
 

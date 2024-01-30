@@ -1,12 +1,10 @@
 package com.serhii_00_tymoshenko.notes.repository.pseudodb
 
 
-import android.database.Observable
 import android.net.Uri
 import com.serhii_00_tymoshenko.notes.data.Note
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.update
 
 
 class PseudoDb {
@@ -40,27 +38,32 @@ class PseudoDb {
             )
         )
 
-        notes.update { it.toMutableList().apply { addAll(storedNotes) } }
+        val tempNotes = notes.value.toMutableList()
+        tempNotes.addAll(storedNotes)
+        notes.value = tempNotes
     }
 
     fun addNote(note: Note) {
-        notes.update { it.toMutableList().apply { add(note) } }
+        val tempNotes = notes.value.toMutableList()
+        tempNotes.add(note)
+        notes.value = tempNotes
     }
 
     fun deleteNote(note: Note) {
-        notes.update { it.toMutableList().apply { remove(note) } }
+        val tempNotes = notes.value.toMutableList()
+        tempNotes.remove(note)
+        notes.value = tempNotes
     }
 
     fun editNote(editedNote: Note) {
-        notes.update { notes ->
-            notes.toMutableList().apply {
-                val oldNote = notes.filter { note -> note.id == editedNote.id }[0]
-                val index = notes.indexOf(oldNote)
+        val tempNotes = notes.value.toMutableList()
+        val oldNote = tempNotes.filter { note -> note.id == editedNote.id }[0]
+        val index = tempNotes.indexOf(oldNote)
 
-                removeAt(index)
-                add(index, editedNote)
-            }
-        }
+        tempNotes.removeAt(index)
+        tempNotes.add(index, editedNote)
+
+        notes.value = tempNotes
     }
 
     fun getNotes(): Flow<List<Note>> = notes

@@ -48,7 +48,7 @@ class NotesAdapter(
                 }
 
                 note.imageUri?.let { uri ->
-                    Glide.with(root).load(uri).into(photo)
+                    Glide.with(photo).load(uri).into(photo)
                 }
             }
         }
