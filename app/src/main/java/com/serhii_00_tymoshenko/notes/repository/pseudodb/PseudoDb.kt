@@ -57,8 +57,7 @@ class PseudoDb {
 
     fun editNote(editedNote: Note) {
         val tempNotes = notes.value.toMutableList()
-        val oldNote = tempNotes.filter { note -> note.id == editedNote.id }[0]
-        val index = tempNotes.indexOf(oldNote)
+        val index = tempNotes.indexOfFirst { tempNote -> tempNote.id == editedNote.id }
 
         tempNotes.removeAt(index)
         tempNotes.add(index, editedNote)
